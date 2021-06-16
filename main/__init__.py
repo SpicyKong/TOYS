@@ -26,5 +26,6 @@ def create_app():
     #bcrypt.init_app(app)
 
     from . import models
-
+    from .views import index
+    app.register_blueprint(index.bp)
     return app
