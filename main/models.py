@@ -1,4 +1,5 @@
 from werkzeug.utils import validate_arguments
+from secrets import token_urlsafe
 from main import db
 
 class User(db.Model):
@@ -12,10 +13,10 @@ class User(db.Model):
     token_api = db.Column('TOKEN_API', db.String(300), nullable = False)
     token_auth = db.Column('TOKEN_USER', db.String(16), nullable = False)
 
-    def __init__(self, name, t_api, t_auth):
+    def __init__(self, name, t_api):
         self.set_username(name)
         self.set_token_api(t_api)
-        self.set_token_auth(t_auth)
+        self.set_token_auth('')
         
     def set_username(self, name):
         self.username = name
@@ -23,8 +24,18 @@ class User(db.Model):
     def set_token_api(self, token):
         self.token_api = token
 
-    def set_token_auth(self, token):
-        self.token_auth = token
+    def set_token_auth(self):
+        self.token_auth = token_urlsafe(16)
+        db.session.commit()
+    
+    def get_username(self):
+        return self.username
+    
+    def get_token_api(self):
+        return self.token_api
+
+    def get_token_auth(self):
+        return self.token_auth
 
 class Repository(db.Model):
     __tablename__ = "repo"

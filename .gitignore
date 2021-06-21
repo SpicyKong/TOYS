@@ -1,3 +1,7 @@
 # 설정 파일은 무시
 config.py
 __pycache__/
+
+migrations/
+
+*.db

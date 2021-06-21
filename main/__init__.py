@@ -22,10 +22,11 @@ def create_app():
     # 앱 DB 설정
     db.init_app(app)
     migrate.init_app(app, db)
-    # 추후 password 사용시 사용
-    #bcrypt.init_app(app)
+    
+    bcrypt.init_app(app)
 
     from . import models
-    from .views import index
+    from .views import index, users
     app.register_blueprint(index.bp)
+    app.register_blueprint(users.bp_users)
     return app
