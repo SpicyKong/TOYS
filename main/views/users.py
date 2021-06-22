@@ -7,14 +7,27 @@ from main import db
 from time import time
 bp_users = Blueprint('users', __name__, url_prefix='/users')
 
-@bp_users.route('', methods=["POST"])
-def auth():
-    print('chk')
+# jwt 확인 데코레이터
+def check_auth(org_func):
+    def verify():
+        try:
+            username = jwt.decode(request.cookies.get('user_token'), options={"verify_signature": False}, algorithms=['HS256'])['username']
+            user = db.session.query(User).filter_by(username=username).first()
+            jwt.decode(request.cookies.get('user_token'), user.get_token_auth(), algorithms=['HS256'])
+            return org_func(user)
+        except:
+            return make_response({'message':'권한이 없습니다.'}, 401)
+    return verify
+
+@bp_users.route('')
+@check_auth
+def test(test_user):
+    print(test_user.get_username())
     return 'Index page'
 
 
 @bp_users.route('/logintest')
-def logintest():
+def login():
     code = request.args.get('code', None)
     if code is None:
         return make_response({'message':'추후상태코드설정'}, 400)
@@ -49,8 +62,6 @@ def logintest():
     ret.set_cookie('user_token', user_token, httponly=True)
     print(user_token)
     return ret
-
-
 
 
 """
